@@ -1,4 +1,4 @@
-FROM --platform=amd64 alpine:latest
+FROM debian:bookworm
 
 ARG NAIVEPROXY_BIN
 ARG NAIVEPROXY_VERSION
@@ -14,8 +14,10 @@ COPY ${NAIVEPROXY_BIN} /usr/bin/naive
 COPY entry.sh /entry.sh
 
 RUN set -ex \
-    && apk add gcompat ca-certificates \
-    && rm -rf /var/cache/apk/* \
+    && apt update \
+    && apt install ca-certificates -y \
+    && apt clean \
+    && apt autoremove \
     && chmod +x /usr/bin/naive /entry.sh;
 
 EXPOSE 1080
