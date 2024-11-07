@@ -62,5 +62,6 @@ echo "start to build image: naiveproxy:${NAIVEPROXY_VERSION}"
 docker buildx build -t naiveproxy:${NAIVEPROXY_VERSION} \
 --build-arg NAIVEPROXY_BIN=${NAIVEPROXY_BIN} \
 --build-arg NAIVEPROXY_VERSION=${NAIVEPROXY_VERSION} \
+--load \
 $@ \
 -f Dockerfile .
