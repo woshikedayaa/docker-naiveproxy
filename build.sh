@@ -1,15 +1,16 @@
-#!/bin/sh
+#!/bin/bash
 # init
 set -e;
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/bin";
 
 # check command
 MISSING_COMMAND=""
-function check() {
+check() {
     for i in $(seq $#);do
-        if  [[ ! -z $i ]] && [[ -z $(command -v $i) ]];then
-            MISSING_COMMAND="${MISSING_COMMAND} $i";
+        if  [[ ! -z $1 ]] && [[ -z $(command -v $1) ]];then
+            MISSING_COMMAND="${MISSING_COMMAND} $1";
         fi
+        shift 1;
     done
 }
 check jq docker curl tar mkdir;
@@ -19,11 +20,12 @@ if [[ ! -z ${MISSING_COMMAND} ]];then
 fi
 
 # init cache
-CACHE=$(pwd)/.cache
+CACHE=./.cache
 mkdir -p ${CACHE}
-if [[ ! -d ${CACHE} ]] && [[ ! -z $(ls -A ${CACHE}) ]];then
+if [[ ! -d ${CACHE} ]] || [[ ! -z $(ls -A ${CACHE}) ]];then
     echo "Warning cache dir is non-empty, backup to ${CACHE}.bak";
     cp -rp ${CACHE} ${CACHE}.bak
+    rm -rf ${CACHE}/*;
 fi
 
 # get the latest version
@@ -60,4 +62,5 @@ echo "start to build image: naiveproxy:${NAIVEPROXY_VERSION}"
 docker buildx build -t naiveproxy:${NAIVEPROXY_VERSION} \
 --build-arg NAIVEPROXY_BIN=${NAIVEPROXY_BIN} \
 --build-arg NAIVEPROXY_VERSION=${NAIVEPROXY_VERSION} \
+$@ \
 -f Dockerfile .
