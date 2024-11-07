@@ -20,11 +20,11 @@ if [[ ! -z ${MISSING_COMMAND} ]];then
 fi
 
 # init cache
-CACHE=./.cache
+CACHE=$(pwd)/.cache
 mkdir -p ${CACHE}
 if [[ ! -d ${CACHE} ]] || [[ ! -z $(ls -A ${CACHE}) ]];then
     echo "Warning cache dir is non-empty, backup to ${CACHE}.bak";
-    cp -rp ${CACHE} ${CACHE}.bak
+    cp -rp ${CACHE} ${CACHE}.bak;
     rm -rf ${CACHE}/*;
 fi
 
@@ -47,7 +47,7 @@ echo "extracting ${RELEASE_PATH}"
 tar --xz -x -f ${RELEASE_PATH} -C ${CACHE}
 
 # binary file path
-NAIVEPROXY_BIN=${CACHE}/naiveproxy-${NAIVEPROXY_VERSION}-linux-x64/naive
+NAIVEPROXY_BIN=./.cache/naiveproxy-${NAIVEPROXY_VERSION}-linux-x64/naive
 if [[ ! -f ${NAIVEPROXY_BIN} ]];then
     echo "can not found the naieproxy binary file: ${NAIVEPROXY_BIN}";
     exit 1;
@@ -59,7 +59,7 @@ export NAIVEPROXY_VERSION
 
 # start to build
 echo "start to build image: naiveproxy:${NAIVEPROXY_VERSION}"
-docker buildx build --load -t naiveproxy:${NAIVEPROXY_VERSION} \
+docker buildx build -t naiveproxy:${NAIVEPROXY_VERSION} \
 --build-arg NAIVEPROXY_BIN=${NAIVEPROXY_BIN} \
 --build-arg NAIVEPROXY_VERSION=${NAIVEPROXY_VERSION} \
 $@ \
